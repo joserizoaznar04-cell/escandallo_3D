@@ -1,0 +1,1116 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F9F9F7">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Escandallo 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Concepto: hoja de taller. Cabecera con líneas de capa y cuatro pestañas; paneles planos.
+   Acento bronce de placa PEI; los estados de producción y cobro llevan su propio color. */
+:root {
+  --bg: #ECEDEA;
+  --surface: #F9F9F7;
+  --sunken: #E3E5E1;
+  --ink: #1B1E20;
+  --muted: #5B6266;
+  --line: #CDD0CB;
+  --accent: #9C5714;
+  --accent-soft: #F1E2D0;
+  --on-accent: #FFFFFF;
+  --good: #2D7A4C;
+  --good-soft: #DCEFE2;
+  --warn: #9A6410;
+  --warn-soft: #F6E9CF;
+  --bad: #B0352A;
+  --bad-soft: #F7DEDA;
+  --info: #3F6E8C;
+  --info-soft: #DCE8F0;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --r: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131516; --surface: #1B1E20; --sunken: #232729; --ink: #E6E7E3; --muted: #9AA1A4; --line: #30363A;
+    --accent: #D9904A; --accent-soft: #3A2A1B; --on-accent: #1B1309;
+    --good: #63BF89; --good-soft: #1D3326; --warn: #E3AE52; --warn-soft: #382C16; --bad: #EC7064; --bad-soft: #3D2120;
+    --info: #6FA3C4; --info-soft: #1C2C38;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131516; --surface: #1B1E20; --sunken: #232729; --ink: #E6E7E3; --muted: #9AA1A4; --line: #30363A;
+  --accent: #D9904A; --accent-soft: #3A2A1B; --on-accent: #1B1309;
+  --good: #63BF89; --good-soft: #1D3326; --warn: #E3AE52; --warn-soft: #382C16; --bad: #EC7064; --bad-soft: #3D2120;
+  --info: #6FA3C4; --info-soft: #1C2C38;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.45; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+button, input, select, textarea { font: inherit; color: inherit; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+.mono, .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- Cabecera ---------- */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, var(--line) 55%, transparent) 3px 4px),
+    var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.top-inner { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 12px 0; }
+.brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.brand h1 { font-size: 22px; font-weight: 800; font-stretch: 125%; letter-spacing: -0.01em; }
+.brand h1 span { color: var(--accent); }
+.storage { margin-left: auto; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); display: inline-block; }
+.dot.cloud { background: var(--good); }
+nav.tabs { display: flex; gap: 2px; margin-top: 10px; overflow-x: auto; scrollbar-width: none; }
+nav.tabs a {
+  text-decoration: none; color: var(--muted); padding: 9px 14px; font-weight: 600; font-size: 14px;
+  border: 1px solid transparent; border-bottom: none; border-radius: var(--r) var(--r) 0 0; white-space: nowrap;
+  display: inline-flex; gap: 8px; align-items: baseline;
+}
+nav.tabs a .n { font-family: var(--font-mono); font-size: 11px; color: var(--accent); }
+nav.tabs a:hover { color: var(--ink); }
+nav.tabs a[aria-current="page"] { color: var(--ink); background: var(--bg); border-color: var(--line); position: relative; top: 1px; }
+
+main { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 22px 64px; }
+.view-head { display: flex; align-items: end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.view-head h2 { font-size: 26px; font-weight: 800; font-stretch: 112%; }
+.view-head p { margin: 4px 0 0; color: var(--muted); max-width: 62ch; }
+
+/* ---------- Botones ---------- */
+.btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); padding: 8px 14px; border-radius: var(--r); font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; color: var(--ink); white-space: nowrap; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--muted); padding-inline: 8px; }
+.btn.ghost:hover { color: var(--ink); background: var(--sunken); }
+.btn.danger { color: var(--bad); }
+.btn.danger.solid { background: var(--bad); color: var(--surface); border-color: var(--bad); }
+.btn.sm { padding: 5px 10px; font-size: 13px; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+.row-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+/* ---------- Campos ---------- */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.f { display: grid; gap: 4px; min-width: 0; align-content: start; }
+.f > label, .lbl { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: .02em; }
+.f .ctl { display: flex; align-items: stretch; border: 1px solid var(--line); border-radius: var(--r); background: var(--bg); overflow: hidden; }
+.f .ctl:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.f input, .f select { border: none; background: transparent; padding: 8px 10px; width: 100%; min-width: 0; outline: none; }
+.f input[type="color"] { padding: 2px; height: 38px; cursor: pointer; }
+.f input.num { text-align: right; }
+.f .unit { font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding: 0 10px; display: flex; align-items: center; background: var(--sunken); border-left: 1px solid var(--line); white-space: nowrap; }
+.f.err .ctl { border-color: var(--bad); }
+.f .msg { font-size: 12px; color: var(--bad); }
+.f .help { font-size: 12px; color: var(--muted); }
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; cursor: pointer; }
+.check input { margin-top: 3px; accent-color: var(--accent); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; flex-wrap: wrap; width: fit-content; max-width: 100%; }
+.seg button { border: none; background: var(--bg); padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--muted); }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.fgrid { display: grid; gap: 12px 14px; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+.span2 { grid-column: span 2; }
+@media (max-width: 520px) { .span2 { grid-column: 1 / -1; } }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent); flex: none; }
+.sw.lg { width: 26px; height: 26px; }
+.ctl .sw { align-self: center; margin-left: 10px; }
+
+/* ---------- Pestaña 1 ---------- */
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 360px); gap: 18px; align-items: start; }
+.summary { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 112px); }
+@media (max-width: 900px) { .split { grid-template-columns: minmax(0, 1fr); } .summary { position: static; } }
+.form { padding: 18px; display: grid; gap: 18px; }
+.group { display: grid; gap: 12px; padding-top: 16px; border-top: 1px solid var(--line); }
+.group-t { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; color: var(--muted); }
+.mrow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr) 64px; gap: 10px; align-items: end; }
+.mrow .stock-hint { grid-column: 1 / -1; font-size: 12px; color: var(--muted); margin-top: -4px; }
+.mrow .stock-hint b { font-family: var(--font-mono); font-weight: 500; color: var(--ink); }
+.mrow .stock-hint .low { color: var(--bad); }
+@media (max-width: 600px) { .mrow { grid-template-columns: 1fr 1fr; } }
+.add { justify-self: start; color: var(--accent); }
+.sum-head { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--line); }
+.sum-head > div { padding: 14px 16px; display: grid; gap: 2px; }
+.sum-head > div + div { border-left: 1px solid var(--line); }
+.big { font-family: var(--font-mono); font-size: 26px; font-weight: 500; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.big.accent { color: var(--accent); }
+.big.neg { color: var(--bad); }
+.sub { font-size: 12px; color: var(--muted); font-weight: 400; }
+.block { padding: 14px 16px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
+.block:first-child { border-top: none; }
+.kv { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px 12px; font-size: 14px; margin: 0; }
+.kv dt { color: var(--muted); min-width: 0; }
+.kv dd { margin: 0; text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.kv .strong { color: var(--ink); font-weight: 700; }
+.kv dd.strong { font-weight: 600; }
+.kv .sep { grid-column: 1 / -1; border-top: 1px dashed var(--line); margin: 2px 0; }
+.note { font-size: 12px; color: var(--muted); margin: 0; }
+.alert { border-radius: var(--r); padding: 10px 12px; font-size: 13px; display: grid; gap: 4px; }
+.alert.bad { background: var(--bad-soft); color: var(--bad); }
+.alert.warn { background: var(--warn-soft); color: var(--warn); }
+.alert ul { margin: 0; padding-left: 18px; }
+.sum-actions { display: flex; gap: 8px; flex-wrap: wrap; padding: 14px 16px; border-top: 1px solid var(--line); }
+.suggest { display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.linkbtn { border: none; background: none; padding: 0; color: var(--accent); font-weight: 700; cursor: pointer; font-size: 12px; text-decoration: underline; text-underline-offset: 2px; }
+
+/* ---------- Pills y chips ---------- */
+.pill { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 99px; letter-spacing: .02em; white-space: nowrap; display: inline-block; }
+.pill.good { background: var(--good-soft); color: var(--good); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.info { background: var(--info-soft); color: var(--info); }
+.pill.neutral { background: var(--sunken); color: var(--muted); }
+button.pill { border: none; cursor: pointer; }
+button.pill:hover { filter: brightness(.95); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; background: var(--sunken); border-radius: 99px; padding: 2px 9px 2px 6px; }
+
+/* ---------- Pestaña 2: producción ---------- */
+.kanban { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: start; }
+@media (max-width: 860px) { .kanban { grid-template-columns: minmax(0, 1fr); } }
+.col { background: var(--sunken); border-radius: var(--r); padding: 10px; display: grid; gap: 10px; border-top: 3px solid var(--st); }
+.col-pend { --st: var(--warn); } .col-proc { --st: var(--info); } .col-done { --st: var(--good); }
+.col > header { display: flex; justify-content: space-between; align-items: baseline; padding: 2px 4px; }
+.col > header h3 { font-size: 15px; font-weight: 700; font-stretch: 112%; }
+.count { font-family: var(--font-mono); font-size: 13px; color: var(--st); font-weight: 500; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; display: grid; gap: 8px; min-width: 0; }
+.card-top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.card-top b { font-size: 15px; overflow-wrap: anywhere; }
+.ref { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.meta { font-size: 13px; color: var(--muted); }
+.notes { font-size: 13px; margin: 0; padding: 6px 8px; background: var(--bg); border-radius: 4px; overflow-wrap: anywhere; }
+.card-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--line); padding-top: 8px; }
+.spacer { flex: 1; }
+.col .empty-col { font-size: 13px; color: var(--muted); padding: 14px 6px; text-align: center; }
+.confirm { display: flex; gap: 6px; align-items: center; font-size: 13px; color: var(--bad); flex-wrap: wrap; }
+
+/* ---------- Pestaña 3: ventas ---------- */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.kpi { padding: 14px 16px; display: grid; gap: 4px; }
+.kpi .v { font-family: var(--font-mono); font-size: 22px; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.kpi .l { font-size: 12px; color: var(--muted); font-weight: 600; }
+.kpi.hl { border-color: var(--accent); }
+.kpi.hl .v { color: var(--accent); }
+.kpi .v.neg { color: var(--bad); }
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.tablewrap { overflow-x: auto; }
+table.sales { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.sales th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 700; letter-spacing: .02em; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.sales td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+table.sales .n { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.sales tr:last-child td { border-bottom: none; }
+table.sales tfoot td { font-weight: 700; border-top: 2px solid var(--line); border-bottom: none; }
+.pname b { display: block; overflow-wrap: anywhere; }
+.neg { color: var(--bad); }
+@media (max-width: 760px) {
+  table.sales thead { display: none; }
+  table.sales, table.sales tbody, table.sales tfoot, table.sales tr, table.sales td { display: block; width: 100%; }
+  table.sales tr { border-bottom: 1px solid var(--line); padding: 10px 0; }
+  table.sales td { border: none; padding: 3px 14px; display: flex; justify-content: space-between; gap: 12px; text-align: right; }
+  table.sales td::before { content: attr(data-label); color: var(--muted); font-size: 12px; font-family: var(--font-body); text-align: left; }
+  table.sales td.pc { display: block; text-align: left; padding-bottom: 6px; }
+  table.sales td.pc::before, table.sales td.act::before { content: none; }
+  table.sales td.act { justify-content: flex-start; padding-top: 8px; }
+  table.sales tfoot td.pc { display: none; }
+}
+
+/* ---------- Pestaña 4: configuración ---------- */
+.cfg { display: grid; gap: 18px; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.panel-head h3 { font-size: 16px; font-weight: 700; font-stretch: 112%; }
+.panel-body { padding: 16px; display: grid; gap: 14px; }
+.mats { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+.mat { border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: grid; gap: 10px; background: var(--bg); min-width: 0; }
+.mat-main { display: flex; gap: 12px; align-items: center; }
+.mat-main > div { min-width: 0; flex: 1; display: grid; }
+.mat-main b { overflow-wrap: anywhere; }
+.bar { height: 8px; background: var(--sunken); border-radius: 99px; overflow: hidden; }
+.bar span { display: block; height: 100%; background: var(--good); border-radius: 99px; }
+.bar.warn span { background: var(--warn); }
+.bar.bad span { background: var(--bad); }
+.mat-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; font-size: 13px; color: var(--muted); }
+.mat-stats b { font-family: var(--font-mono); font-weight: 500; color: var(--ink); }
+.mat-edit { display: grid; gap: 12px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.mat-edit .fgrid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+.counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.counter { background: var(--bg); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; display: grid; gap: 2px; }
+.counter .v { font-family: var(--font-mono); font-size: 22px; letter-spacing: -0.02em; }
+.counter .l { font-size: 12px; color: var(--muted); font-weight: 600; }
+
+.empty { padding: 28px 18px; display: grid; gap: 10px; justify-items: start; color: var(--muted); }
+.empty strong { color: var(--ink); font-size: 16px; font-family: var(--font-display); font-stretch: 112%; }
+
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(24px + env(safe-area-inset-bottom, 0px)); z-index: 20; background: var(--ink); color: var(--surface); padding: 10px 16px; border-radius: var(--r); font-size: 14px; font-weight: 600; box-shadow: 0 6px 24px rgba(0,0,0,.18); max-width: calc(100% - 32px); }
+@media (prefers-reduced-motion: no-preference) {
+  .toast { animation: rise .2s ease-out; }
+  @keyframes rise { from { transform: translate(-50%, 8px); opacity: .4; } }
+}
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="brand"><h1>Escandallo <span>3D</span></h1><span class="storage" id="storage"></span></div>
+    <nav class="tabs" aria-label="Secciones">
+      <a href="#pieza">Nueva pieza</a><a href="#produccion">Producción <span class="n"></span></a><a href="#ventas">Ventas <span class="n"></span></a><a href="#config">Configuración <span class="n"></span></a>
+    </nav>
+  </div>
+</header>
+<main>
+  <section id="view-pieza"></section>
+  <section id="view-produccion" hidden></section>
+  <section id="view-ventas" hidden></section>
+  <section id="view-config" hidden></section>
+</main>
+<script>
+(function () {
+'use strict';
+
+/* ================= Utilidades ================= */
+const $ = (s, el) => (el || document).querySelector(s);
+const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+const uid = () => Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
+const clone = o => JSON.parse(JSON.stringify(o));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fin = x => typeof x === 'number' && isFinite(x);
+const num0 = x => fin(x) ? x : 0;
+const fmtN = (x, d = 2) => fin(x) ? x.toLocaleString('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d }) : '—';
+const eur = (x, d = 2) => fin(x) ? fmtN(x, d) + ' €' : '—';
+const pct = x => fin(x) ? fmtN(x * 100, 0) + ' %' : '—';
+const gr = g => fin(g) ? (Math.abs(g) >= 1000 ? fmtN(g / 1000, 2) + ' kg' : fmtN(g, 0) + ' g') : '—';
+const hm = h => { if (!fin(h)) return '—'; const t = Math.round(h * 60); return Math.floor(t / 60) + ' h ' + String(t % 60).padStart(2, '0') + ' min'; };
+const fmtDate = iso => { try { return new Date(iso).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }); } catch (e) { return ''; } };
+const now = () => new Date().toISOString();
+function parseEs(str) {
+  if (str == null) return null;
+  let s = String(str).trim().replace(/[\s€%]/g, '');
+  if (s === '') return null;
+  if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+  const v = Number(s);
+  return isFinite(v) ? v : NaN;
+}
+const inVal = x => fin(x) ? String(+x.toFixed(6)).replace('.', ',') : '';
+const getPath = (o, p) => p.split('.').reduce((a, k) => a == null ? a : a[k], o);
+function setPath(o, p, v) { const ks = p.split('.'); let a = o; for (let i = 0; i < ks.length - 1; i++) { if (a[ks[i]] == null) a[ks[i]] = {}; a = a[ks[i]]; } a[ks[ks.length - 1]] = v; }
+let toastTimer;
+function toast(msg) {
+  let t = $('#toast');
+  if (!t) { t = document.createElement('div'); t.id = 'toast'; t.className = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+  t.textContent = msg; t.hidden = false;
+  t.style.animation = 'none'; void t.offsetWidth; t.style.animation = '';
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 3400);
+}
+
+/* ================= Modelo ================= */
+const STATUS = { pend: 'Pendiente', proc: 'En proceso', done: 'Hecho' };
+const ORDER = ['pend', 'proc', 'done'];
+const STATUS_PILL = { pend: 'warn', proc: 'info', done: 'good' };
+const TYPES = ['PLA', 'PLA Matte', 'PLA Silk', 'PLA-CF', 'PETG', 'TPU', 'ABS', 'ASA', 'Otro'];
+const printed = s => s === 'proc' || s === 'done';
+
+function defaults() {
+  return {
+    cfg: { printerModel: 'Bambu Lab A1 Combo', elecRate: 0.18, powerKw: 0.095, wearPerHour: 0, initHours: 0, initGrams: 0, multiplier: 3, shopName: 'puertadentro', pdfCosts: true, lowStock: 200, seq: 0 },
+    materials: [], pieces: []
+  };
+}
+function newMaterial(o) {
+  return Object.assign({ id: 'm_' + uid(), type: 'PLA', brand: '', color: 'Nuevo color', hex: '#8a8f93', spoolPrice: 20, spoolGrams: 1000, spools: 1, adjust: 0, purchases: [], createdAt: now() }, o || {});
+}
+function exampleMaterial() {
+  const m = newMaterial({ brand: 'Bambu Lab', color: 'Negro (ejemplo)', hex: '#1d1d1f', spoolPrice: 19.99 });
+  m.purchases = [{ date: now(), n: 1, price: 19.99 }];
+  return m;
+}
+function normalize(raw) {
+  const d = defaults();
+  if (!raw || typeof raw !== 'object') return d;
+  d.cfg = Object.assign(d.cfg, raw.cfg || {});
+  d.materials = (Array.isArray(raw.materials) ? raw.materials : []).filter(m => m && m.id).map(m => Object.assign(newMaterial(), m, { purchases: Array.isArray(m.purchases) ? m.purchases : [] }));
+  d.pieces = (Array.isArray(raw.pieces) ? raw.pieces : []).filter(p => p && p.id && Array.isArray(p.rows)).map(p => Object.assign({
+    ref: '', name: '', client: '', notes: '', units: 1, hours: 0, minutes: 0, price: 0, status: 'pend', paid: false, dates: {},
+    rates: { elecRate: d.cfg.elecRate, powerKw: d.cfg.powerKw, wearPerHour: 0 }, createdAt: now(), updatedAt: now()
+  }, p));
+  return d;
+}
+function fromV1(settings, filaments, base) {
+  const p = settings && settings.printer;
+  if (p) {
+    if (fin(p.elecRate)) base.cfg.elecRate = p.elecRate;
+    if (fin(p.powerKw)) base.cfg.powerKw = p.powerKw;
+    if (p.model) base.cfg.printerModel = p.model;
+  }
+  (Array.isArray(filaments) ? filaments : []).filter(f => f && !/ejemplo/i.test(f.name || '')).forEach(f => {
+    const price = num0(f.price) + num0(f.shipping);
+    base.materials.push(newMaterial({ type: f.type || 'PLA', brand: f.brand || '', color: f.color || f.name || 'Sin color', spoolPrice: price, spoolGrams: f.grams || 1000, spools: 1, purchases: [{ date: now(), n: 1, price }] }));
+  });
+  return base;
+}
+
+let S = defaults();
+const mat = id => S.materials.find(m => m.id === id);
+const cpg = m => m && m.spoolGrams > 0 ? num0(m.spoolPrice) / m.spoolGrams : NaN;
+const curRates = () => ({ elecRate: num0(S.cfg.elecRate), powerKw: num0(S.cfg.powerKw), wearPerHour: num0(S.cfg.wearPerHour) });
+
+function usage(mid, skipId) {
+  let used = 0, reserved = 0;
+  S.pieces.forEach(p => {
+    if (p.id === skipId) return;
+    p.rows.forEach(r => { if (r.materialId !== mid) return; if (printed(p.status)) used += num0(r.grams); else reserved += num0(r.grams); });
+  });
+  return { used, reserved };
+}
+function stock(m) {
+  const u = usage(m.id);
+  const bought = num0(m.spools) * num0(m.spoolGrams);
+  const left = bought - u.used - num0(m.adjust);
+  return { bought, used: u.used, reserved: u.reserved, left, spoolsLeft: m.spoolGrams > 0 ? left / m.spoolGrams : NaN };
+}
+function stockState(m, st) {
+  const low = num0(S.cfg.lowStock);
+  if (st.left <= 0) return ['bad', 'Agotado'];
+  if (st.left < low) return ['bad', 'Comprar ya'];
+  if (st.left - st.reserved < low) return ['warn', 'Comprar pronto'];
+  return ['good', 'Suficiente'];
+}
+const isComplete = p => Array.isArray(p.rows) && p.rows.length > 0 && p.rows.every(r => r.materialId && num0(r.grams) > 0) && num0(p.hours) + num0(p.minutes) > 0;
+function costOf(p) {
+  const h = num0(p.hours) + num0(p.minutes) / 60;
+  let matCost = 0, grams = 0;
+  p.rows.forEach(r => { grams += num0(r.grams); matCost += num0(r.grams) * num0(r.cpg); });
+  const rt = p.rates || curRates();
+  const energy = h * num0(rt.powerKw) * num0(rt.elecRate);
+  const wear = h * num0(rt.wearPerHour);
+  const total = matCost + energy + wear;
+  const u = Math.max(1, Math.floor(num0(p.units)) || 1);
+  const sale = num0(p.price) * u;
+  return { complete: isComplete(p), hours: h, grams, mat: matCost, energy, wear, total, units: u, perUnit: total / u, sale, profit: sale - total, profitPU: (sale - total) / u, margin: sale > 0 ? (sale - total) / sale : NaN };
+}
+
+/* ================= Persistencia ================= */
+const LS = 'escandallo3d.v2', LS_FORM = 'escandallo3d.v2.form';
+const Store = { mode: 'local', col: null };
+const cleanDoc = o => JSON.parse(JSON.stringify(o, (k, v) => (typeof v === 'number' && !isFinite(v)) ? null : v));
+function writeLocal() { try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) { } }
+function cloudSet(id, data) {
+  if (Store.mode !== 'cloud') return Promise.resolve();
+  return Store.col.doc(id).set(cleanDoc(data)).catch(err => {
+    console.warn(err);
+    toast(err && err.code === 'quota_exceeded' ? 'La base de datos está llena. Exporta una copia y borra piezas antiguas.' : 'No se pudo guardar en tu cuenta. Queda guardado en este navegador.');
+  });
+}
+const cfgDoc = () => ({ kind: 'v2meta', cfg: S.cfg, materials: S.materials });
+let cfgTimer;
+function saveCfg(now) {
+  writeLocal();
+  clearTimeout(cfgTimer);
+  if (now) return cloudSet('v2cfg', cfgDoc());
+  cfgTimer = setTimeout(() => cloudSet('v2cfg', cfgDoc()), 450);
+}
+function savePiece(p) { writeLocal(); cloudSet(p.id, Object.assign({ kind: 'v2piece' }, p)); }
+function deletePieceDoc(id) { writeLocal(); if (Store.mode === 'cloud') Store.col.doc(id).delete().catch(e => console.warn(e)); }
+function pushAll() {
+  writeLocal();
+  if (Store.mode !== 'cloud') return Promise.resolve();
+  return Promise.all([cloudSet('v2cfg', cfgDoc())].concat(S.pieces.map(p => cloudSet(p.id, Object.assign({ kind: 'v2piece' }, p)))));
+}
+function bootLocal() {
+  let raw = null;
+  try { raw = JSON.parse(localStorage.getItem(LS) || 'null'); } catch (e) { }
+  if (raw) return normalize(raw);
+  let d = defaults();
+  try { const v1 = JSON.parse(localStorage.getItem('escandallo3d.v1') || 'null'); if (v1) d = fromV1(v1.settings, v1.filaments, d); } catch (e) { }
+  if (!d.materials.length) d.materials.push(exampleMaterial());
+  return d;
+}
+async function waitClaude() {
+  for (let i = 0; i < 30 && !(window.claude && window.claude.use); i++) await new Promise(r => setTimeout(r, 100));
+  return window.claude && window.claude.use ? window.claude : null;
+}
+async function initCloud() {
+  try {
+    const c = await waitClaude(); if (!c) return;
+    const [db, user] = await Promise.all([c.use('db'), c.use('user')]);
+    if (!db || !user) return;
+    const id = await user.id(); if (!id) return;
+    const col = db.collection('data/users/' + id);
+    const [meta, pcs] = await Promise.all([col.doc('v2cfg').get(), col.where('kind', '==', 'v2piece').limit(1000).get()]);
+    Store.col = col; Store.mode = 'cloud';
+    if (meta.exists) {
+      const m = meta.data();
+      S = normalize({ cfg: m.cfg, materials: m.materials, pieces: pcs.docs.map(d => { const x = Object.assign({}, d.data()); delete x.kind; return x; }) });
+      writeLocal();
+    } else {
+      const localHasData = S.pieces.length || S.materials.some(m => !/ejemplo/i.test(m.color));
+      if (!localHasData) {
+        const [oldF, oldC] = await Promise.all([col.doc('filaments').get(), col.doc('config').get()]);
+        const d = fromV1(oldC.exists ? (oldC.data() || {}).settings : null, oldF.exists ? (oldF.data() || {}).items : null, defaults());
+        S.cfg.elecRate = d.cfg.elecRate; S.cfg.powerKw = d.cfg.powerKw; S.cfg.printerModel = d.cfg.printerModel;
+        if (d.materials.length) S.materials = d.materials;
+      }
+      await pushAll();
+    }
+    fixForm();
+    renderAll();
+  } catch (e) {
+    console.warn('Sin base de datos', e);
+    Store.mode = 'local'; Store.col = null;
+    renderStorage();
+  }
+}
+
+/* ================= Formulario (pestaña 1) ================= */
+function blankForm() {
+  const m = S.materials[0];
+  return { editingId: null, name: '', client: '', notes: '', units: 1, rows: [{ materialId: m ? m.id : null, grams: null }], hours: null, minutes: null, price: null, status: 'pend', paid: false };
+}
+let form = null;
+function loadForm() { try { const f = JSON.parse(localStorage.getItem(LS_FORM) || 'null'); if (f && Array.isArray(f.rows)) return Object.assign(blankForm(), f); } catch (e) { } return blankForm(); }
+function writeForm() { try { localStorage.setItem(LS_FORM, JSON.stringify(form)); } catch (e) { } }
+function fixForm() {
+  if (!form) return;
+  if (form.editingId && !S.pieces.some(p => p.id === form.editingId)) form.editingId = null;
+  form.rows.forEach(r => { if (!mat(r.materialId) && !r.label) r.materialId = S.materials[0] ? S.materials[0].id : null; });
+}
+function buildPiece(f) {
+  const prev = f.editingId ? S.pieces.find(p => p.id === f.editingId) : null;
+  const rows = f.rows.map(r => {
+    const m = mat(r.materialId);
+    const old = prev && prev.rows.find(x => x.materialId === r.materialId);
+    const label = m ? { type: m.type, color: m.color, brand: m.brand, hex: m.hex } : (old ? { type: old.type, color: old.color, brand: old.brand, hex: old.hex } : (r.label || { type: '?', color: '?', brand: '', hex: '#888888' }));
+    return Object.assign({ materialId: r.materialId, grams: num0(r.grams), cpg: old ? old.cpg : cpg(m) }, label);
+  });
+  return {
+    id: prev ? prev.id : null, ref: prev ? prev.ref : '', name: String(f.name || '').trim(), client: String(f.client || '').trim(), notes: String(f.notes || '').trim(),
+    units: Math.max(1, Math.floor(num0(f.units)) || 1), rows, hours: num0(f.hours), minutes: num0(f.minutes), price: num0(f.price),
+    status: f.status, paid: !!f.paid, rates: prev ? prev.rates : curRates(),
+    dates: prev ? Object.assign({}, prev.dates) : {}, createdAt: prev ? prev.createdAt : now(), updatedAt: now()
+  };
+}
+function validate(f) {
+  const e = [];
+  if (!String(f.name || '').trim()) e.push('Escribe el nombre de la pieza.');
+  if (!(Number.isInteger(f.units) && f.units >= 1)) e.push('Las unidades deben ser un número entero de 1 o más.');
+  if (!f.rows.length) e.push('Añade al menos un material.');
+  if (f.status === 'pend') return e;
+  const pre = 'Para ponerla «' + STATUS[f.status] + '» falta: ';
+  f.rows.forEach((r, i) => {
+    if (!r.materialId) e.push(pre + `el color del material ${i + 1}.`);
+    if (!(num0(r.grams) > 0)) e.push(pre + `los gramos del material ${i + 1}.`);
+  });
+  if (!(num0(f.hours) + num0(f.minutes) > 0)) e.push(pre + 'el tiempo de impresión.');
+  return e;
+}
+
+/* ================= Campos ================= */
+function target(scope) {
+  if (scope === 'f') return form;
+  if (scope === 'c') return S.cfg;
+  if (scope.startsWith('m:')) return mat(scope.slice(2));
+  return null;
+}
+const fid = (scope, k) => 'i_' + (scope + '_' + k).replace(/[^a-zA-Z0-9_]/g, '_');
+function fNum(scope, k, label, o = {}) {
+  const v = getPath(target(scope), k), id = fid(scope, k);
+  return `<div class="f${o.cls ? ' ' + o.cls : ''}"><label for="${id}">${label}</label>
+    <div class="ctl"><input id="${id}" class="num" type="text" inputmode="decimal" autocomplete="off" data-scope="${scope}" data-k="${k}" data-t="${o.t || 'num'}" value="${inVal(v)}" placeholder="${esc(o.ph || '')}">${o.unit ? `<span class="unit">${o.unit}</span>` : ''}</div>
+    <div class="msg" hidden></div>${(o.help || o.helpId) ? `<div class="help"${o.helpId ? ` id="${o.helpId}"` : ''}>${o.help || ''}</div>` : ''}</div>`;
+}
+function fText(scope, k, label, o = {}) {
+  const v = getPath(target(scope), k), id = fid(scope, k);
+  return `<div class="f${o.cls ? ' ' + o.cls : ''}"><label for="${id}">${label}</label><div class="ctl"><input id="${id}" type="${o.type || 'text'}" autocomplete="off" data-scope="${scope}" data-k="${k}" data-t="text" value="${esc(v || '')}" placeholder="${esc(o.ph || '')}"${o.list ? ` list="${o.list}"` : ''}></div>${o.help ? `<div class="help">${o.help}</div>` : ''}</div>`;
+}
+function fChk(scope, k, label, help) {
+  const v = getPath(target(scope), k), id = fid(scope, k);
+  return `<label class="check" for="${id}"><input id="${id}" type="checkbox" data-scope="${scope}" data-k="${k}" data-t="bool"${v ? ' checked' : ''}><span>${label}${help ? `<br><span class="note">${help}</span>` : ''}</span></label>`;
+}
+function seg(k, opts, cur) {
+  return `<div class="seg" role="group">${opts.map(([v, l]) => `<button type="button" data-act="seg" data-k="${k}" data-v="${v}" aria-pressed="${String(v) === String(cur)}">${l}</button>`).join('')}</div>`;
+}
+function setErr(wrap, msg) {
+  if (!wrap) return;
+  wrap.classList.toggle('err', !!msg);
+  const m = $('.msg', wrap); if (m) { m.textContent = msg || ''; m.hidden = !msg; }
+}
+function onField(e) {
+  const el = e.target;
+  if (!el || !el.dataset || !el.dataset.k || !el.dataset.scope) return;
+  const t = el.dataset.t;
+  if (e.type === 'change' && t !== 'bool' && t !== 'sel') return;
+  if (e.type === 'input' && (t === 'bool' || t === 'sel')) return;
+  const scope = el.dataset.scope, k = el.dataset.k, tgt = target(scope);
+  if (!tgt) return;
+  let v;
+  if (t === 'bool') v = el.checked;
+  else if (t === 'text' || t === 'sel') v = el.value;
+  else {
+    v = parseEs(el.value);
+    let msg = '';
+    if (Number.isNaN(v)) msg = 'Introduce un número. Usa coma para los decimales.';
+    else if (v != null && v < 0) msg = 'No puede ser negativo.';
+    else if (t === 'int' && v != null && !Number.isInteger(v)) msg = 'Debe ser un número entero.';
+    setErr(el.closest('.f'), msg);
+    if (msg) v = null;
+  }
+  setPath(tgt, k, v);
+  if (scope === 'f') {
+    writeForm();
+    if (el.dataset.rr === '1') renderPieza(); else refreshFormDerived();
+  } else if (scope === 'c') {
+    saveCfg(); refreshCfgDerived();
+  } else if (scope.startsWith('m:')) {
+    saveCfg(); refreshMat(scope.slice(2));
+  }
+}
+
+/* ================= Navegación ================= */
+const VIEWS = ['pieza', 'produccion', 'ventas', 'config'];
+let view = 'pieza';
+function go(v) {
+  if (!VIEWS.includes(v)) v = 'pieza';
+  view = v;
+  VIEWS.forEach(x => { const el = $('#view-' + x); if (el) el.hidden = x !== v; });
+  $$('nav.tabs a').forEach(a => a.setAttribute('aria-current', a.getAttribute('href') === '#' + v ? 'page' : 'false'));
+  renderView();
+}
+function renderView() {
+  if (view === 'pieza') renderPieza();
+  if (view === 'produccion') renderProd();
+  if (view === 'ventas') renderVentas();
+  if (view === 'config') renderConfig();
+  renderTabCounts();
+}
+function renderAll() { renderStorage(); renderView(); }
+function renderStorage() {
+  const el = $('#storage'); if (!el) return;
+  el.innerHTML = Store.mode === 'cloud' ? '<span class="dot cloud"></span>Guardado en tu cuenta' : '<span class="dot"></span>Guardado solo en este navegador';
+}
+function renderTabCounts() {
+  const act = S.pieces.filter(p => p.status !== 'done').length;
+  const unpaid = S.pieces.filter(p => !p.paid).length;
+  const low = S.materials.filter(m => stockState(m, stock(m))[0] !== 'good').length;
+  const set = (h, n) => { const a = $(`nav.tabs a[href="#${h}"] .n`); if (a) a.textContent = n ? String(n) : ''; };
+  set('produccion', act); set('ventas', unpaid); set('config', low);
+}
+
+/* ================= Pestaña 1: nueva pieza ================= */
+function renderPieza() {
+  const el = $('#view-pieza');
+  const editing = form.editingId ? S.pieces.find(p => p.id === form.editingId) : null;
+  if (!S.materials.length) {
+    el.innerHTML = `<div class="view-head"><div><h2>Nueva pieza</h2></div></div><section class="panel"><div class="empty"><strong>Primero añade un material</strong><span>Registra en Configuración las bobinas que tienes (tipo, color, precio y gramos) para poder calcular el coste de tus piezas.</span><a class="btn primary sm" href="#config">Ir a Configuración</a></div></section>`;
+    return;
+  }
+  const types = Array.from(new Set(S.materials.map(m => m.type)));
+  el.innerHTML = `
+  <div class="view-head"><div><h2>${editing ? 'Editar ' + esc(editing.ref) : 'Nueva pieza'}</h2><p>Copia los datos de Bambu Studio: gramos totales, contando purga y torre de purga, y tiempo de impresión.</p></div>
+    ${editing ? '<button class="btn" data-act="form-cancel">Cancelar edición</button>' : ''}</div>
+  <div class="split">
+    <form class="panel form" id="pform" novalidate onsubmit="return false">
+      <div class="fgrid">
+        ${fText('f', 'name', 'Nombre de la pieza', { ph: 'p. ej. Llavero con nombre', cls: 'span2' })}
+        ${fText('f', 'client', 'Cliente', { ph: 'Opcional' })}
+        ${fNum('f', 'units', 'Unidades', { t: 'int', unit: 'ud', help: 'Las que salen de esta impresión.' })}
+      </div>
+      <div class="group"><span class="group-t">Material</span>
+        ${form.rows.map((r, i) => rowHtml(r, i, types)).join('')}
+        ${form.rows.length < 8 ? '<button type="button" class="btn ghost sm add" data-act="row-add">+ Añadir otro color</button>' : ''}
+      </div>
+      <div class="group"><span class="group-t">Tiempo de impresión</span>
+        <div class="fgrid">${fNum('f', 'hours', 'Horas', { t: 'int', unit: 'h' })}${fNum('f', 'minutes', 'Minutos', { unit: 'min' })}</div>
+      </div>
+      <div class="group"><span class="group-t">Venta</span>
+        <div class="fgrid">${fNum('f', 'price', 'Precio de venta por unidad', { unit: '€/ud', help: '', helpId: 'suggest' })}${fText('f', 'notes', 'Notas', { ph: 'Texto personalizado, entrega…' })}</div>
+        <div class="fgrid">
+          <div class="f"><span class="lbl">Estado</span>${seg('status', [['pend', 'Pendiente'], ['proc', 'En proceso'], ['done', 'Hecho']], form.status)}</div>
+          <div class="f"><span class="lbl">Pago</span>${seg('paid', [['false', 'Pendiente'], ['true', 'Pagado']], String(!!form.paid))}</div>
+        </div>
+      </div>
+    </form>
+    <aside class="panel summary" id="psum" aria-live="polite"></aside>
+  </div>`;
+  refreshFormDerived();
+}
+function rowHtml(r, i, types) {
+  const m = mat(r.materialId);
+  const type = m ? m.type : (r.label ? r.label.type : types[0]);
+  const colors = S.materials.filter(x => x.type === type);
+  const orphan = !m && r.materialId && r.label ? `<option value="${esc(r.materialId)}" selected>${esc(r.label.color)} (eliminado)</option>` : '';
+  return `<div class="mrow">
+    <div class="f"><label for="rt${i}">${form.rows.length > 1 ? 'Material ' + (i + 1) : 'Material'}</label><div class="ctl"><select id="rt${i}" data-act-change="row-type" data-i="${i}">${types.map(t => `<option${t === type ? ' selected' : ''}>${esc(t)}</option>`).join('')}${types.includes(type) ? '' : `<option selected>${esc(type)}</option>`}</select></div></div>
+    <div class="f"><label for="${fid('f', 'rows.' + i + '.materialId')}">Color</label><div class="ctl"><span class="sw" style="background:${esc(m ? m.hex : (r.label ? r.label.hex : 'transparent'))}"></span><select id="${fid('f', 'rows.' + i + '.materialId')}" data-scope="f" data-k="rows.${i}.materialId" data-t="sel" data-rr="1">${orphan}${colors.map(c => `<option value="${c.id}"${c.id === r.materialId ? ' selected' : ''}>${esc(c.color)}${c.brand ? ' · ' + esc(c.brand) : ''}</option>`).join('')}</select></div></div>
+    ${fNum('f', 'rows.' + i + '.grams', 'Gramos totales', { unit: 'g' })}
+    ${form.rows.length > 1 ? `<button type="button" class="btn ghost sm" data-act="row-del" data-i="${i}">Quitar</button>` : '<span></span>'}
+    <div class="stock-hint" data-hint="${i}"></div>
+  </div>`;
+}
+function refreshFormDerived() {
+  if (view !== 'pieza' || !$('#psum')) return;
+  const p = buildPiece(form), c = costOf(p);
+  const editing = form.editingId ? S.pieces.find(x => x.id === form.editingId) : null;
+  const errs = validate(form);
+  // Stock por fila
+  const willUse = printed(form.status);
+  const lowWarn = [];
+  form.rows.forEach((r, i) => {
+    const h = $(`[data-hint="${i}"]`); if (!h) return;
+    const m = mat(r.materialId); if (!m) { h.textContent = ''; return; }
+    const u = usage(m.id, form.editingId);
+    const left = num0(m.spools) * num0(m.spoolGrams) - u.used - num0(m.adjust);
+    const thisG = form.rows.filter(x => x.materialId === m.id).reduce((a, x) => a + num0(x.grams), 0);
+    const after = left - (willUse ? thisG : 0);
+    const reservedAfter = u.reserved + (willUse ? 0 : thisG);
+    h.innerHTML = `Quedan <b>${gr(left)}</b> de ${esc(m.type)} ${esc(m.color)}${thisG > 0 ? (willUse ? ` · después de esta pieza: <b class="${after < 0 ? 'low' : ''}">${gr(after)}</b>` : ` · reservado para pendientes: <b>${gr(reservedAfter)}</b>`) : ''}`;
+    if (thisG > 0 && left - thisG < 0) lowWarn.push(`${m.type} ${m.color}: no te llega con lo que queda (${gr(left)}). Si has comprado otra bobina, súmala en Configuración.`);
+  });
+  // Precio sugerido
+  const sugg = Math.ceil(c.perUnit * num0(S.cfg.multiplier) * 10 - 1e-9) / 10;
+  const sEl = $('#suggest');
+  if (sEl) sEl.innerHTML = c.total > 0 ? `<span class="suggest">Sugerido ${eur(sugg)} (coste × ${fmtN(num0(S.cfg.multiplier), 1)}) <button type="button" class="linkbtn" data-act="use-suggest" data-v="${sugg}">Usar</button></span>` : '';
+  const neg = c.profit < 0, ok = c.complete;
+  $('#psum').innerHTML = `
+    <div class="sum-head">
+      <div><span class="lbl">Coste por unidad</span><span class="big">${ok ? eur(c.perUnit) : '—'}</span><span class="sub">${ok ? 'total ' + eur(c.total) : 'falta laminar'}</span></div>
+      <div><span class="lbl">Beneficio por unidad</span><span class="big ${neg ? 'neg' : 'accent'}">${ok && num0(form.price) > 0 ? eur(c.profitPU) : '—'}</span><span class="sub">${!ok ? 'cuando tengas gramos y tiempo' : num0(form.price) > 0 ? 'total ' + eur(c.profit) + ' · margen ' + pct(c.margin) : 'pon un precio de venta'}</span></div>
+    </div>
+    ${!ok && form.status === 'pend' ? `<div class="block"><div class="alert warn"><b>Pedido sin laminar</b><span>Puedes registrarlo ya como pendiente con solo el nombre. Cuando lo modeles, edítalo y añade gramos y tiempo para calcular el coste.</span></div></div>` : ''}
+    <div class="block"><dl class="kv">
+      <dt>Material (${gr(c.grams)})</dt><dd>${ok ? eur(c.mat) : '—'}</dd>
+      <dt>Electricidad (${hm(c.hours)})</dt><dd>${eur(c.energy, 3)}</dd>
+      ${c.wear > 0 ? `<dt>Desgaste de máquina</dt><dd>${eur(c.wear)}</dd>` : ''}
+      <dt class="strong">Coste total</dt><dd class="strong">${ok ? eur(c.total) : '—'}</dd>
+      <div class="sep"></div>
+      <dt>Venta (${c.units} × ${eur(num0(form.price))})</dt><dd>${eur(c.sale)}</dd>
+      <dt class="strong">Beneficio</dt><dd class="strong${neg && ok ? ' neg' : ''}">${ok ? eur(c.profit) : '—'}</dd>
+    </dl></div>
+    ${lowWarn.length ? `<div class="block"><div class="alert warn"><ul>${lowWarn.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></div>` : ''}
+    <div class="block"><p class="note">${willUse ? 'Al guardarla como «En proceso» o «Hecho», su material se descuenta de las bobinas.' : 'Mientras esté pendiente, su material queda reservado pero no se descuenta.'} El coste se guarda con los precios de hoy y no cambia aunque luego cambien.</p></div>
+    <div class="sum-actions">
+      <button class="btn primary" data-act="save-piece"${errs.length ? ' aria-describedby="perrs"' : ''}>${editing ? 'Guardar cambios' : 'Registrar pieza'}</button>
+      <button class="btn ghost" data-act="form-reset">Vaciar</button>
+    </div>
+    <div id="perrs" hidden></div>`;
+}
+function savePieceFromForm() {
+  const errs = validate(form);
+  if (errs.length) {
+    const box = $('#perrs');
+    if (box) { box.hidden = false; box.className = 'block'; box.innerHTML = `<div class="alert bad"><b>Falta algo</b><ul>${errs.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`; }
+    toast(errs[0]);
+    return;
+  }
+  const p = buildPiece(form);
+  const isNew = !p.id;
+  if (isNew) {
+    S.cfg.seq = num0(S.cfg.seq) + 1;
+    p.id = 'pz_' + uid(); p.ref = 'P-' + String(S.cfg.seq).padStart(4, '0');
+    S.pieces.push(p);
+    saveCfg(true);
+  } else {
+    const i = S.pieces.findIndex(x => x.id === p.id);
+    S.pieces[i] = p;
+  }
+  if (!p.dates[p.status]) p.dates[p.status] = now();
+  savePiece(p);
+  const keepMat = form.rows[0] ? form.rows[0].materialId : null;
+  form = blankForm(); if (keepMat && mat(keepMat)) form.rows[0].materialId = keepMat;
+  writeForm();
+  toast(isNew ? `${p.ref} registrada en ${STATUS[p.status]}` : `${p.ref} actualizada`);
+  lowStockToast(p);
+  if (isNew) renderPieza(); else location.hash = 'produccion';
+  renderTabCounts();
+}
+function lowStockToast(p) {
+  if (!printed(p.status)) return;
+  const ids = Array.from(new Set(p.rows.map(r => r.materialId)));
+  for (const id of ids) {
+    const m = mat(id); if (!m) continue;
+    const st = stock(m), s = stockState(m, st);
+    if (s[0] === 'bad') { setTimeout(() => toast(`Queda poco ${m.type} ${m.color}: ${gr(st.left)}`), 1800); break; }
+  }
+}
+function editPiece(id) {
+  const p = S.pieces.find(x => x.id === id); if (!p) return;
+  form = { editingId: p.id, name: p.name, client: p.client, notes: p.notes, units: p.units, rows: p.rows.map(r => ({ materialId: r.materialId, grams: r.grams, label: { type: r.type, color: r.color, brand: r.brand, hex: r.hex } })), hours: p.hours, minutes: p.minutes, price: p.price, status: p.status, paid: p.paid };
+  writeForm();
+  if (view === 'pieza') renderPieza(); else location.hash = 'pieza';
+}
+
+/* ================= Pestaña 2: producción ================= */
+let confirmDel = null, showAllDone = false;
+function pieceChips(p) { return `<div class="chips">${p.rows.filter(r => r.materialId).map(r => `<span class="chip"><span class="sw" style="background:${esc(r.hex)}"></span>${esc(r.type)} ${esc(r.color)}${num0(r.grams) > 0 ? ' · ' + gr(r.grams) : ''}</span>`).join('')}</div>`; }
+function renderProd() {
+  const el = $('#view-produccion');
+  const card = p => {
+    const c = costOf(p);
+    const moves = p.status === 'pend' ? `<button class="btn sm primary" data-act="move" data-id="${p.id}" data-to="proc">Empezar</button>`
+      : p.status === 'proc' ? `<button class="btn sm" data-act="move" data-id="${p.id}" data-to="pend" aria-label="Volver a pendiente">←</button><button class="btn sm primary" data-act="move" data-id="${p.id}" data-to="done">Terminar</button>`
+      : `<button class="btn sm" data-act="move" data-id="${p.id}" data-to="proc">← Reabrir</button>`;
+    return `<article class="card">
+      <div class="card-top"><b>${esc(p.name)}</b><span class="mono ref">${esc(p.ref)}</span></div>
+      ${c.complete ? '' : '<span class="pill warn" style="justify-self:start">Falta laminar: sin gramos ni tiempo</span>'}
+      <div class="meta">${c.units} ud${c.complete ? ' · ' + hm(c.hours) : ''}${p.client ? ' · ' + esc(p.client) : ''}${p.status === 'done' && p.dates.done ? ' · ' + fmtDate(p.dates.done) : ''}</div>
+      ${pieceChips(p)}
+      ${p.notes ? `<p class="notes">${esc(p.notes)}</p>` : ''}
+      ${confirmDel === p.id ? `<div class="confirm">¿Eliminar ${esc(p.ref)}? Su material vuelve al stock. <button class="btn sm danger solid" data-act="del-yes" data-id="${p.id}">Eliminar</button><button class="btn sm" data-act="del-no">Cancelar</button></div>`
+        : `<div class="card-actions">${moves}<span class="spacer"></span><span class="pill ${p.paid ? 'good' : 'neutral'}">${p.paid ? 'Pagado' : 'Sin cobrar'}</span><button class="btn sm ghost" data-act="edit" data-id="${p.id}">Editar</button><button class="btn sm ghost danger" data-act="del" data-id="${p.id}">Eliminar</button></div>`}
+    </article>`;
+  };
+  const cols = ORDER.map(s => {
+    let list = S.pieces.filter(p => p.status === s);
+    list.sort((a, b) => s === 'done' ? ((b.dates.done || b.updatedAt) || '').localeCompare((a.dates.done || a.updatedAt) || '') : (a.createdAt || '').localeCompare(b.createdAt || ''));
+    const total = list.length;
+    if (s === 'done' && !showAllDone) list = list.slice(0, 20);
+    return `<section class="col col-${s}"><header><h3>${STATUS[s]}</h3><span class="count">${total}</span></header>
+      ${list.length ? list.map(card).join('') : `<div class="empty-col">${s === 'pend' ? 'Nada pendiente' : s === 'proc' ? 'Nada imprimiéndose' : 'Aún no has terminado ninguna'}</div>`}
+      ${s === 'done' && total > 20 ? `<button class="btn sm ghost" data-act="toggle-done">${showAllDone ? 'Mostrar menos' : `Ver las ${total}`}</button>` : ''}
+    </section>`;
+  }).join('');
+  el.innerHTML = `<div class="view-head"><div><h2>Producción</h2><p>Mueve cada pieza según avanza. Al pasar a «En proceso» su material se descuenta de las bobinas.</p></div><a class="btn primary" href="#pieza" data-act="new">Nueva pieza</a></div>
+    ${S.pieces.length ? `<div class="kanban">${cols}</div>` : `<section class="panel"><div class="empty"><strong>Todavía no hay piezas</strong><span>Registra la primera en la pestaña Nueva pieza.</span><a class="btn primary sm" href="#pieza">Registrar pieza</a></div></section>`}`;
+}
+function movePiece(id, to) {
+  const p = S.pieces.find(x => x.id === id); if (!p || !STATUS[to]) return;
+  if (to !== 'pend' && !isComplete(p)) { editPiece(id); form.status = to; writeForm(); renderPieza(); toast('Añade los gramos y el tiempo de impresión para pasarla a ' + STATUS[to]); return; }
+  p.status = to; p.dates = p.dates || {}; p.dates[to] = now(); p.updatedAt = now();
+  savePiece(p);
+  toast(`${p.ref} → ${STATUS[to]}`);
+  lowStockToast(p);
+  renderView();
+}
+
+/* ================= Pestaña 3: ventas ================= */
+let salesFilter = 'unpaid';
+function renderVentas() {
+  const el = $('#view-ventas');
+  const all = S.pieces.map(p => ({ p, c: costOf(p) }));
+  const sum = (arr, f) => arr.reduce((a, x) => a + f(x), 0);
+  const paid = all.filter(x => x.p.paid), unpaid = all.filter(x => !x.p.paid);
+  const done = all.filter(x => x.c.complete), nInc = all.length - done.length;
+  const tSale = sum(all, x => x.c.sale), tCost = sum(done, x => x.c.total), tProfit = sum(done, x => x.c.sale) - tCost;
+  const kpis = [
+    ['Ventas totales', eur(tSale), ''],
+    ['Cobrado', eur(sum(paid, x => x.c.sale)), ''],
+    ['Pendiente de cobro', eur(sum(unpaid, x => x.c.sale)), ''],
+    ['Coste de producción', eur(tCost), ''],
+    ['Beneficio', eur(tProfit), 'hl', sum(done, x => x.c.sale) > 0 ? 'margen ' + pct(tProfit / sum(done, x => x.c.sale)) : '']
+  ];
+  const list = (salesFilter === 'paid' ? paid : salesFilter === 'unpaid' ? unpaid : all).sort((a, b) => (b.p.createdAt || '').localeCompare(a.p.createdAt || ''));
+  const lSale = sum(list, x => x.c.sale), lDone = list.filter(x => x.c.complete), lCost = sum(lDone, x => x.c.total), lProfit = sum(lDone, x => x.c.sale) - lCost;
+  el.innerHTML = `<div class="view-head"><div><h2>Ventas</h2><p>Balance de todas las piezas registradas. El coste incluye material, electricidad${num0(S.cfg.wearPerHour) > 0 ? ' y desgaste' : ''}, no tu tiempo.</p></div></div>
+    <div class="kpis">${kpis.map(([l, v, cls, sub]) => `<div class="panel kpi ${cls}"><span class="l">${l}</span><span class="v${l === 'Beneficio' && tProfit < 0 ? ' neg' : ''}">${v}</span>${sub ? `<span class="sub">${sub}</span>` : ''}</div>`).join('')}</div>
+    ${nInc ? `<div class="alert warn" style="margin-bottom:12px">${nInc === 1 ? 'Hay 1 pieza sin laminar' : `Hay ${nInc} piezas sin laminar`}: cuenta en ventas, pero no en coste ni beneficio hasta que añadas gramos y tiempo.</div>` : ''}
+    <div class="toolbar">${segSales(paid.length, unpaid.length, all.length)}<span class="note">${Caps.downloads ? 'Cada pieza tiene su extracto en PDF.' : ''}</span></div>
+    <section class="panel">${!all.length ? `<div class="empty"><strong>Sin ventas todavía</strong><span>Las piezas que registres aparecerán aquí con su coste, precio y beneficio.</span></div>`
+      : !list.length ? `<div class="empty"><strong>${salesFilter === 'unpaid' ? 'No tienes nada pendiente de cobro' : 'Aún no hay piezas cobradas'}</strong></div>`
+      : `<div class="tablewrap"><table class="sales"><thead><tr><th>Pieza</th><th class="n">Uds</th><th class="n">Coste/ud</th><th class="n">Coste total</th><th class="n">Precio/ud</th><th class="n">Total</th><th class="n">Benef./ud</th><th class="n">Benef. total</th><th></th></tr></thead><tbody>
+      ${list.map(({ p, c }) => `<tr>
+        <td class="pc"><div class="pname"><b>${esc(p.name)}</b><span class="sub"><span class="mono">${esc(p.ref)}</span> · ${fmtDate(p.createdAt)}${p.client ? ' · ' + esc(p.client) : ''} · <span class="pill ${STATUS_PILL[p.status]}">${STATUS[p.status]}</span></span></div></td>
+        <td class="n" data-label="Unidades">${c.units}</td>
+        <td class="n" data-label="Coste por ud">${c.complete ? eur(c.perUnit) : '<span class="pill warn">Sin laminar</span>'}</td>
+        <td class="n" data-label="Coste total">${c.complete ? eur(c.total) : '—'}</td>
+        <td class="n" data-label="Precio por ud">${eur(num0(p.price))}</td>
+        <td class="n" data-label="Total">${eur(c.sale)}</td>
+        <td class="n${c.complete && c.profitPU < 0 ? ' neg' : ''}" data-label="Beneficio por ud">${c.complete ? eur(c.profitPU) : '—'}</td>
+        <td class="n${c.complete && c.profit < 0 ? ' neg' : ''}" data-label="Beneficio total"><b>${c.complete ? eur(c.profit) : '—'}</b></td>
+        <td class="act"><div class="row-actions" style="justify-content:flex-end"><button class="pill ${p.paid ? 'good' : 'warn'}" data-act="toggle-paid" data-id="${p.id}" title="Cambiar estado de pago">${p.paid ? 'Pagado' : 'Pendiente'}</button><button class="btn sm" data-act="pdf" data-id="${p.id}"${Caps.downloads ? '' : ' hidden'}>PDF</button></div></td>
+      </tr>`).join('')}</tbody>
+      <tfoot><tr><td class="pc">Total de la lista</td><td class="n" data-label="Unidades">${sum(list, x => x.c.units)}</td><td></td><td class="n" data-label="Coste total">${eur(lCost)}</td><td></td><td class="n" data-label="Ventas">${eur(lSale)}</td><td></td><td class="n${lProfit < 0 ? ' neg' : ''}" data-label="Beneficio">${eur(lProfit)}</td><td></td></tr></tfoot>
+      </table></div>`}</section>`;
+}
+function segSales(np, nu, na) {
+  const o = [['unpaid', `Pendiente de pago (${nu})`], ['paid', `Pagado (${np})`], ['all', `Todas (${na})`]];
+  return `<div class="seg" role="group">${o.map(([v, l]) => `<button type="button" data-act="sales-filter" data-v="${v}" aria-pressed="${v === salesFilter}">${l}</button>`).join('')}</div>`;
+}
+
+/* ================= Pestaña 4: configuración ================= */
+let editMat = null, weighMat = null, confirmMat = null, confirmWipe = false, pendingImport = null;
+function matHead(m) {
+  const st = stock(m), s = stockState(m, st);
+  return `<span class="sw lg" style="background:${esc(m.hex)}"></span><div><b>${esc(m.type)} · ${esc(m.color)}</b><span class="sub">${esc(m.brand || 'Sin marca')} · ${eur(num0(m.spoolPrice))} por ${gr(num0(m.spoolGrams))} · ${eur(cpg(m) * 1000)}/kg</span></div><span class="pill ${s[0]}">${s[1]}</span>`;
+}
+function matStats(m) {
+  const st = stock(m), s = stockState(m, st);
+  const w = m.spoolGrams > 0 ? Math.max(0, Math.min(100, st.left / m.spoolGrams * 100)) : 0;
+  const spent = (m.purchases || []).reduce((a, x) => a + num0(x.price) * (x.n || 1), 0);
+  return `<div class="bar ${s[0] === 'good' ? '' : s[0]}" role="img" aria-label="Quedan ${gr(st.left)}"><span style="width:${w}%"></span></div>
+    <div class="mat-stats">
+      <span>Quedan <b>${gr(st.left)}</b></span><span>≈ <b>${fmtN(st.spoolsLeft, 2)}</b> bobinas</span>
+      <span>Bobinas compradas <b>${num0(m.spools)}</b></span><span>Reservado <b>${gr(st.reserved)}</b></span>
+      <span>Impreso <b>${gr(st.used)}</b></span><span>Gastado <b>${eur(spent)}</b></span>
+    </div>`;
+}
+function refreshMat(id) {
+  const m = mat(id); if (!m) return;
+  const h = $(`[data-mhead="${id}"]`), s = $(`[data-mstats="${id}"]`);
+  if (h) h.innerHTML = matHead(m);
+  if (s) s.innerHTML = matStats(m);
+  renderTabCounts();
+}
+function refreshCfgDerived() {
+  const el = $('#counters'); if (el) el.innerHTML = countersHtml();
+  S.materials.forEach(m => refreshMat(m.id));
+}
+function countersHtml() {
+  const pr = S.pieces.filter(p => printed(p.status));
+  const h = pr.reduce((a, p) => a + costOf(p).hours, 0);
+  const g = pr.reduce((a, p) => a + costOf(p).grams, 0);
+  const spent = S.materials.reduce((a, m) => a + (m.purchases || []).reduce((b, x) => b + num0(x.price) * (x.n || 1), 0), 0);
+  const spools = S.materials.reduce((a, m) => a + num0(m.spools), 0);
+  return [
+    ['Horas totales de impresión', hm(num0(S.cfg.initHours) + h), `${hm(h)} registradas en la app`],
+    ['Material total impreso', gr(num0(S.cfg.initGrams) + g), `${gr(g)} registrados en la app`],
+    ['Bobinas compradas', String(spools), `${eur(spent)} gastados`],
+    ['Piezas terminadas', String(S.pieces.filter(p => p.status === 'done').length), `${S.pieces.length} registradas`]
+  ].map(([l, v, sub]) => `<div class="counter"><span class="l">${l}</span><span class="v">${v}</span><span class="sub">${sub}</span></div>`).join('');
+}
+function renderConfig() {
+  const el = $('#view-config');
+  const typeOpts = m => Array.from(new Set(TYPES.concat(m.type ? [m.type] : [])));
+  el.innerHTML = `<div class="view-head"><div><h2>Configuración</h2><p>Tus bobinas, la tarifa eléctrica y los contadores de la impresora.</p></div></div>
+  <div class="cfg">
+    <section class="panel"><div class="panel-head"><h3>Bobinas y materiales</h3><button class="btn primary sm" data-act="mat-add">Añadir material</button></div>
+      <div class="panel-body">
+        ${S.materials.length ? `<div class="mats">${S.materials.map(m => `<div class="mat">
+          <div class="mat-main" data-mhead="${m.id}">${matHead(m)}</div>
+          <div data-mstats="${m.id}" style="display:grid;gap:10px">${matStats(m)}</div>
+          ${confirmMat === m.id ? `<div class="confirm">${S.pieces.some(p => p.rows.some(r => r.materialId === m.id)) ? 'Las piezas que lo usan conservan su coste.' : ''} ¿Eliminar este material? <button class="btn sm danger solid" data-act="mat-del-yes" data-id="${m.id}">Eliminar</button><button class="btn sm" data-act="mat-del-no">Cancelar</button></div>`
+          : `<div class="row-actions"><button class="btn primary sm" data-act="spool-add" data-id="${m.id}">+1 bobina comprada</button><button class="btn sm" data-act="mat-weigh" data-id="${m.id}">Ajustar por peso</button><button class="btn sm ghost" data-act="mat-edit" data-id="${m.id}">${editMat === m.id ? 'Cerrar' : 'Editar'}</button><button class="btn sm ghost danger" data-act="mat-del" data-id="${m.id}">Eliminar</button></div>`}
+          ${weighMat === m.id ? `<div class="mat-edit"><div class="fgrid"><div class="f"><label for="weigh-in">Filamento que queda, sin el carrete</label><div class="ctl"><input id="weigh-in" class="num" type="text" inputmode="decimal" placeholder="${inVal(Math.max(0, Math.round(stock(m).left)))}"><span class="unit">g</span></div><div class="help">Pesa la bobina y resta el carrete vacío (unos 250 g en las de Bambu Lab).</div></div></div><div class="row-actions"><button class="btn sm primary" data-act="weigh-save" data-id="${m.id}">Guardar peso</button><button class="btn sm" data-act="weigh-cancel">Cancelar</button>${num0(m.adjust) !== 0 ? `<button class="btn sm ghost" data-act="weigh-reset" data-id="${m.id}">Quitar ajuste (${gr(-m.adjust)})</button>` : ''}</div></div>` : ''}
+          ${editMat === m.id ? `<div class="mat-edit"><div class="fgrid">
+            <div class="f"><label for="${fid('m:' + m.id, 'type')}">Tipo</label><div class="ctl"><select id="${fid('m:' + m.id, 'type')}" data-scope="m:${m.id}" data-k="type" data-t="sel">${typeOpts(m).map(t => `<option${t === m.type ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select></div></div>
+            ${fText('m:' + m.id, 'color', 'Color')}
+            <div class="f"><label for="${fid('m:' + m.id, 'hex')}">Muestra</label><div class="ctl"><input id="${fid('m:' + m.id, 'hex')}" type="color" data-scope="m:${m.id}" data-k="hex" data-t="text" value="${esc(m.hex)}"></div></div>
+            ${fText('m:' + m.id, 'brand', 'Marca')}
+            ${fNum('m:' + m.id, 'spoolPrice', 'Precio por bobina', { unit: '€' })}
+            ${fNum('m:' + m.id, 'spoolGrams', 'Filamento por bobina', { unit: 'g' })}
+            ${fNum('m:' + m.id, 'spools', 'Bobinas compradas', { t: 'int', unit: 'ud' })}
+          </div><p class="note">El precio nuevo se aplica a las piezas que registres desde ahora.</p></div>` : ''}
+        </div>`).join('')}</div>` : `<div class="empty"><strong>No tienes materiales</strong><span>Añade cada bobina que compres: tipo, color, precio y gramos.</span></div>`}
+        <div class="fgrid">${fNum('c', 'lowStock', 'Avisar cuando queden menos de', { unit: 'g' })}</div>
+      </div></section>
+
+    <section class="panel"><div class="panel-head"><h3>Impresora y electricidad</h3></div><div class="panel-body"><div class="fgrid">
+      ${fText('c', 'printerModel', 'Impresora')}
+      ${fNum('c', 'elecRate', 'Tarifa eléctrica', { unit: '€/kWh', help: 'Mira tu factura de la luz.' })}
+      ${fNum('c', 'powerKw', 'Consumo medio', { unit: 'kW', help: 'La A1 gasta unos 0,095 kW con PLA.' })}
+      ${fNum('c', 'wearPerHour', 'Desgaste de máquina', { unit: '€/h', help: 'Opcional: amortización y repuestos. 0 = no se cuenta.' })}
+    </div></div></section>
+
+    <section class="panel"><div class="panel-head"><h3>Contadores de la máquina</h3></div><div class="panel-body">
+      <div class="counters" id="counters">${countersHtml()}</div>
+      <div class="fgrid">${fNum('c', 'initHours', 'Horas impresas antes de usar la app', { unit: 'h' })}${fNum('c', 'initGrams', 'Material impreso antes de usar la app', { unit: 'g' })}</div>
+      <p class="note">Cuentan las piezas en proceso y hechas, más lo que indiques como punto de partida.</p>
+    </div></section>
+
+    <section class="panel"><div class="panel-head"><h3>Precio sugerido y PDF</h3></div><div class="panel-body">
+      <div class="fgrid">${fNum('c', 'multiplier', 'Precio sugerido = coste ×', { help: 'El coste no incluye tu tiempo: un ×3 deja margen para pagarlo.' })}${fText('c', 'shopName', 'Nombre en el PDF')}</div>
+      ${fChk('c', 'pdfCosts', 'Incluir costes y beneficio en el PDF', 'Desmárcalo si vas a enseñar el extracto al cliente.')}
+    </div></section>
+
+    <section class="panel"><div class="panel-head"><h3>Tus datos</h3></div><div class="panel-body">
+      <p class="note">${Store.mode === 'cloud' ? 'Se guardan en un espacio privado de tu cuenta de Claude: solo tú los ves y los recuperas desde otro dispositivo.' : 'Se guardan solo en este navegador y en este dispositivo: se pierden si borras los datos del sitio. Exporta una copia de vez en cuando.'}</p>
+      <div class="row-actions">${Caps.downloads ? '<button class="btn" data-act="backup">Exportar copia (JSON)</button>' : ''}<label class="btn" for="import-in">Importar copia</label><input id="import-in" type="file" accept="application/json,.json" hidden>
+        ${confirmWipe ? `<span class="confirm">Se borra todo y no se puede deshacer. <button class="btn sm danger solid" data-act="wipe-yes">Borrar todo</button><button class="btn sm" data-act="wipe-no">Cancelar</button></span>` : '<button class="btn danger" data-act="wipe">Borrar todos los datos</button>'}</div>
+      ${pendingImport ? `<div class="alert warn"><b>Copia válida: ${pendingImport.pieces.length} piezas y ${pendingImport.materials.length} materiales.</b><span>Sustituirá a tus datos actuales.</span><div class="row-actions"><button class="btn primary sm" data-act="import-yes">Sustituir mis datos</button><button class="btn sm" data-act="import-no">Cancelar</button></div></div>` : ''}
+    </div></section>
+  </div>`;
+}
+
+/* ================= PDF y descargas ================= */
+const Caps = { downloads: null };
+async function saveFile(filename, data) {
+  if (!Caps.downloads) { toast('La descarga de archivos no está disponible aquí.'); return; }
+  try { await Caps.downloads.save({ filename, data }); toast('Archivo listo: ' + filename); }
+  catch (e) { if (e && e.code === 'declined') return; toast(e && e.code === 'rate_limited' ? 'Ya hay una descarga pendiente. Inténtalo en unos segundos.' : 'No se pudo descargar el archivo.'); }
+}
+let pdfLoading = null;
+function loadJsPdf() {
+  if (window.jspdf) return Promise.resolve(window.jspdf);
+  if (pdfLoading) return pdfLoading;
+  pdfLoading = new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'; s.onload = () => res(window.jspdf); s.onerror = () => { pdfLoading = null; rej(new Error('jspdf')); }; document.head.appendChild(s); });
+  return pdfLoading;
+}
+async function pdfPiece(p) {
+  let lib;
+  try { lib = await loadJsPdf(); } catch (e) { toast('No se pudo cargar el generador de PDF.'); return; }
+  const c = costOf(p), doc = new lib.jsPDF({ unit: 'mm', format: 'a4' });
+  const L = 18, R = 192, ink = [27, 30, 32], mute = [100, 106, 110], acc = [156, 87, 20];
+  let y = 22;
+  const col = a => doc.setTextColor(a[0], a[1], a[2]);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(20); col(ink); doc.text(S.cfg.shopName || 'Mi taller', L, y);
+  doc.setFontSize(12); col(acc); doc.text('Extracto de pieza', R, y, { align: 'right' });
+  y += 6; doc.setFont('helvetica', 'normal'); doc.setFontSize(9); col(mute);
+  doc.text(`${p.ref} · ${fmtDate(p.createdAt)}`, R, y, { align: 'right' });
+  if (S.cfg.printerModel) doc.text('Impreso en 3D con ' + S.cfg.printerModel, L, y);
+  y += 12;
+  if (p.client) { doc.setFontSize(9); col(mute); doc.text('CLIENTE', L, y); y += 5; doc.setFontSize(11); col(ink); doc.text(p.client, L, y); y += 10; }
+  // Tabla
+  doc.setFillColor(236, 237, 234); doc.rect(L, y - 5, R - L, 8, 'F');
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(9); col(mute);
+  doc.text('CONCEPTO', L + 2, y); doc.text('UDS', 128, y, { align: 'right' }); doc.text('PRECIO/UD', 158, y, { align: 'right' }); doc.text('TOTAL', R - 2, y, { align: 'right' });
+  y += 9; doc.setFont('helvetica', 'normal'); doc.setFontSize(11); col(ink);
+  const nameLines = doc.splitTextToSize(p.name, 95);
+  doc.text(nameLines, L + 2, y);
+  doc.text(String(c.units), 128, y, { align: 'right' }); doc.text(eur(num0(p.price)), 158, y, { align: 'right' }); doc.text(eur(c.sale), R - 2, y, { align: 'right' });
+  y += nameLines.length * 5;
+  if (p.notes) { doc.setFontSize(9); col(mute); const nl = doc.splitTextToSize(p.notes, 95); doc.text(nl, L + 2, y); y += nl.length * 4.2; }
+  y += 3; doc.setDrawColor(205, 208, 203); doc.line(L, y, R, y); y += 8;
+  // Total
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(12); col(ink); doc.text('Total', 128, y, { align: 'right' });
+  doc.setFontSize(16); doc.text(eur(c.sale), R - 2, y, { align: 'right' });
+  y += 7; doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+  if (p.paid) { doc.setTextColor(45, 122, 76); doc.text('Pagado', R - 2, y, { align: 'right' }); } else { doc.setTextColor(154, 100, 16); doc.text('Pendiente de pago', R - 2, y, { align: 'right' }); }
+  y += 14;
+  // Detalles
+  const sect = t => { doc.setFont('helvetica', 'bold'); doc.setFontSize(9); col(mute); doc.text(t.toUpperCase(), L, y); y += 2.5; doc.setDrawColor(205, 208, 203); doc.line(L, y, R, y); y += 6; doc.setFont('helvetica', 'normal'); doc.setFontSize(10); col(ink); };
+  const row = (a, b, bold) => { if (bold) doc.setFont('helvetica', 'bold'); doc.text(String(a), L, y); doc.text(String(b), R, y, { align: 'right' }); if (bold) doc.setFont('helvetica', 'normal'); y += 6; };
+  sect('Fabricación');
+  p.rows.filter(r => r.materialId).forEach(r => row(`${r.type} ${r.color}${r.brand ? ' (' + r.brand + ')' : ''}`, num0(r.grams) > 0 ? gr(r.grams) : 'por definir'));
+  row('Tiempo de impresión', c.hours > 0 ? hm(c.hours) : 'por definir');
+  row('Estado', STATUS[p.status] + (p.status === 'done' && p.dates && p.dates.done ? ' · ' + fmtDate(p.dates.done) : ''));
+  if (S.cfg.pdfCosts && !c.complete) { y += 6; sect('Costes y beneficio (uso interno)'); row('Pendiente de laminar: sin gramos ni tiempo todavía', ''); }
+  else if (S.cfg.pdfCosts) {
+    y += 6; sect('Costes y beneficio (uso interno)');
+    row(`Material (${gr(c.grams)})`, eur(c.mat));
+    row(`Electricidad (${hm(c.hours)})`, eur(c.energy, 3));
+    if (c.wear > 0) row('Desgaste de máquina', eur(c.wear));
+    row('Coste total', eur(c.total), true);
+    row('Coste por unidad', eur(c.perUnit));
+    row('Beneficio total', eur(c.profit), true);
+    row('Beneficio por unidad', eur(c.profitPU));
+    row('Margen sobre la venta', pct(c.margin));
+  }
+  doc.setFontSize(8); col(mute);
+  doc.text('Documento de seguimiento interno. No es una factura.', L, 284);
+  doc.text(`Generado el ${fmtDate(now())}`, R, 284, { align: 'right' });
+  const slug = (p.name || 'pieza').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'pieza';
+  saveFile(`${p.ref}-${slug}.pdf`, doc.output('blob'));
+}
+function onImport(e) {
+  const file = e.target.files && e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const j = JSON.parse(reader.result);
+      const raw = j && j.app === 'escandallo3d-v2' ? j.data : j;
+      if (!raw || !raw.cfg || !Array.isArray(raw.materials) || !Array.isArray(raw.pieces)) throw new Error('formato');
+      pendingImport = normalize(raw); renderConfig();
+    } catch (err) { toast('El archivo no es una copia válida de esta versión de la calculadora.'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+/* ================= Acciones ================= */
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const act = b.dataset.act, id = b.dataset.id, i = +b.dataset.i;
+  switch (act) {
+    case 'seg': {
+      const v = b.dataset.v; form[b.dataset.k] = b.dataset.k === 'paid' ? v === 'true' : v; writeForm();
+      $$(`[data-act="seg"][data-k="${b.dataset.k}"]`).forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      refreshFormDerived(); break;
+    }
+    case 'row-add': { const last = form.rows[form.rows.length - 1]; const other = S.materials.find(m => !form.rows.some(r => r.materialId === m.id)) || mat(last && last.materialId) || S.materials[0]; form.rows.push({ materialId: other ? other.id : null, grams: null }); writeForm(); renderPieza(); break; }
+    case 'row-del': form.rows.splice(i, 1); writeForm(); renderPieza(); break;
+    case 'use-suggest': form.price = +b.dataset.v; writeForm(); { const inp = $('#' + fid('f', 'price')); if (inp) inp.value = inVal(form.price); } refreshFormDerived(); break;
+    case 'save-piece': savePieceFromForm(); break;
+    case 'form-reset': { const keep = form.editingId; form = blankForm(); writeForm(); renderPieza(); if (keep) toast('Edición cancelada'); break; }
+    case 'form-cancel': form = blankForm(); writeForm(); renderPieza(); break;
+    case 'new': if (form.editingId) { form = blankForm(); writeForm(); } break;
+    case 'move': movePiece(id, b.dataset.to); break;
+    case 'edit': editPiece(id); break;
+    case 'del': confirmDel = id; renderProd(); break;
+    case 'del-no': confirmDel = null; renderProd(); break;
+    case 'del-yes': { const p = S.pieces.find(x => x.id === id); S.pieces = S.pieces.filter(x => x.id !== id); confirmDel = null; deletePieceDoc(id); if (form.editingId === id) { form = blankForm(); writeForm(); } toast((p ? p.ref : 'Pieza') + ' eliminada'); renderView(); break; }
+    case 'toggle-done': showAllDone = !showAllDone; renderProd(); break;
+    case 'sales-filter': salesFilter = b.dataset.v; renderVentas(); break;
+    case 'toggle-paid': { const p = S.pieces.find(x => x.id === id); if (!p) break; p.paid = !p.paid; p.dates = p.dates || {}; if (p.paid) p.dates.paid = now(); p.updatedAt = now(); savePiece(p); toast(`${p.ref}: ${p.paid ? 'pagado' : 'pendiente de pago'}`); renderVentas(); renderTabCounts(); break; }
+    case 'pdf': { const p = S.pieces.find(x => x.id === id); if (p) pdfPiece(p); break; }
+    case 'mat-add': { const m = newMaterial(); m.purchases = [{ date: now(), n: 1, price: m.spoolPrice }]; S.materials.push(m); editMat = m.id; weighMat = null; saveCfg(); renderConfig(); const c = $('#' + fid('m:' + m.id, 'color')); if (c) { c.focus(); c.select(); } break; }
+    case 'mat-edit': editMat = editMat === id ? null : id; weighMat = null; renderConfig(); break;
+    case 'mat-del': confirmMat = id; renderConfig(); break;
+    case 'mat-del-no': confirmMat = null; renderConfig(); break;
+    case 'mat-del-yes': S.materials = S.materials.filter(m => m.id !== id); confirmMat = null; saveCfg(); fixForm(); writeForm(); toast('Material eliminado'); renderConfig(); renderTabCounts(); break;
+    case 'spool-add': { const m = mat(id); if (!m) break; m.spools = num0(m.spools) + 1; m.purchases = m.purchases || []; m.purchases.push({ date: now(), n: 1, price: num0(m.spoolPrice) }); saveCfg(); toast(`Bobina añadida: quedan ${gr(stock(m).left)} de ${m.type} ${m.color}`); renderConfig(); renderTabCounts(); break; }
+    case 'mat-weigh': weighMat = weighMat === id ? null : id; editMat = null; renderConfig(); { const w = $('#weigh-in'); if (w) w.focus(); } break;
+    case 'weigh-cancel': weighMat = null; renderConfig(); break;
+    case 'weigh-reset': { const m = mat(id); if (m) { m.adjust = 0; saveCfg(); } weighMat = null; renderConfig(); break; }
+    case 'weigh-save': {
+      const m = mat(id); const v = parseEs($('#weigh-in').value);
+      if (!m || v == null || Number.isNaN(v) || v < 0) { setErr($('#weigh-in').closest('.f'), 'Introduce los gramos que quedan.'); break; }
+      const u = usage(m.id); m.adjust = num0(m.spools) * num0(m.spoolGrams) - u.used - v;
+      saveCfg(); weighMat = null; toast(`Ajustado: quedan ${gr(v)}`); renderConfig(); renderTabCounts(); break;
+    }
+    case 'backup': saveFile('escandallo3d-copia-' + now().slice(0, 10) + '.json', JSON.stringify({ app: 'escandallo3d-v2', exportedAt: now(), data: S }, null, 1)); break;
+    case 'import-yes': {
+      const oldIds = S.pieces.map(p => p.id); S = pendingImport; pendingImport = null;
+      oldIds.filter(x => !S.pieces.some(p => p.id === x)).forEach(deletePieceDoc);
+      pushAll().then(() => toast('Copia restaurada')); form = blankForm(); writeForm(); renderAll(); break;
+    }
+    case 'import-no': pendingImport = null; renderConfig(); break;
+    case 'wipe': confirmWipe = true; renderConfig(); break;
+    case 'wipe-no': confirmWipe = false; renderConfig(); break;
+    case 'wipe-yes': {
+      const ids = S.pieces.map(p => p.id); S = defaults(); S.materials.push(exampleMaterial());
+      ids.forEach(deletePieceDoc); pushAll(); confirmWipe = false; form = blankForm(); writeForm();
+      toast('Datos borrados'); renderAll(); break;
+    }
+  }
+});
+document.addEventListener('input', onField);
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el && el.id === 'import-in') return onImport(e);
+  if (el && el.dataset && el.dataset.actChange === 'row-type') {
+    const i = +el.dataset.i, m = S.materials.find(x => x.type === el.value);
+    form.rows[i].materialId = m ? m.id : null; delete form.rows[i].label; writeForm(); renderPieza(); return;
+  }
+  onField(e);
+  if (el && el.dataset && el.dataset.scope && el.dataset.scope.startsWith('m:') && el.dataset.k === 'type') refreshMat(el.dataset.scope.slice(2));
+});
+window.addEventListener('hashchange', () => go(location.hash.slice(1)));
+
+/* ================= Arranque ================= */
+S = bootLocal();
+form = loadForm(); fixForm();
+go(location.hash.slice(1) || 'pieza');
+renderStorage();
+initCloud();
+const browserDownloads = { save: async ({ filename, data }) => {
+  const blob = data instanceof Blob ? data : new Blob([data], { type: filename.endsWith('.json') ? 'application/json' : 'application/octet-stream' });
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  return { status: 'saved' };
+} };
+(async () => {
+  try {
+    const c = await waitClaude();
+    if (!c) { Caps.downloads = browserDownloads; renderView(); return; }
+    Caps.downloads = await c.use('downloads');
+    if (Caps.downloads) renderView();
+  } catch (e) { }
+})();
+})();
+
+</script>
+
+</body>
+</html>
